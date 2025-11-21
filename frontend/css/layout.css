@@ -1,0 +1,47 @@
+/* Header and layout components */
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #60a5fa, #a78bfa);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+header p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.boards-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.board-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-section h3 {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.status {
+    text-align: center;
+    min-height: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}

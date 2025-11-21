@@ -524,6 +524,44 @@ select:focus, #algorithm-select:focus {
     height: calc(100vh - 100px);
 }
 
+
+/* Modal para mostrar estado de nodo */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal:not(.hidden) {
+    display: flex;
+}
+
+.tree-controls button:hover {
+    background-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.tree-container {
+    width: 100%;
+    height: 600px;
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: grab;
+}
+
+.tree-section.fullscreen .tree-container {
+    height: calc(100vh - 100px);
+}
+
 .tree-container:active {
     cursor: grabbing;
 }

@@ -1,0 +1,91 @@
+/* Queue/Frontier visualization */
+.queue-section {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.queue-section h3 {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.queue-explanation, .tree-explanation {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.queue-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.queue-preview {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.queue-next-item {
+    flex: 0 0 auto;
+    text-align: center;
+}
+
+.queue-info {
+    font-size: 0.75rem;
+    color: var(--text-main);
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.queue-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.queue-item {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.queue-item:hover {
+    transform: scale(1.5);
+}
+
+/* Color coding for BFS levels */
+.queue-item.level-0, .mini-grid.level-0 { background-color: #059669; border-color: #059669; }
+.queue-item.level-1, .mini-grid.level-1 { background-color: #10b981; border-color: #10b981; }
+.queue-item.level-2, .mini-grid.level-2 { background-color: #34d399; border-color: #34d399; }
+.queue-item.level-3, .mini-grid.level-3 { background-color: #a3e635; border-color: #a3e635; }
+.queue-item.level-4, .mini-grid.level-4 { background-color: #fde047; border-color: #fde047; }
+.queue-item.level-5, .mini-grid.level-5 { background-color: #fbbf24; border-color: #fbbf24; }
+.queue-item.level-6, .mini-grid.level-6 { background-color: #fb923c; border-color: #fb923c; }
+.queue-item.level-7, .mini-grid.level-7 { background-color: #f97316; border-color: #f97316; }
+.queue-item.level-8, .mini-grid.level-8 { background-color: #f87171; border-color: #f87171; }
+.queue-item.level-9, .mini-grid.level-9 { background-color: #ef4444; border-color: #ef4444; }
+.queue-item.level-10, .mini-grid.level-10,
+.queue-item.level-high, .mini-grid.level-high { background-color: #dc2626; border-color: #dc2626; }
+
+/* A* color coding by cost */
+.queue-item.cost-low { background-color: #10b981; }
+.queue-item.cost-med { background-color: #f59e0b; }
+.queue-item.cost-high { background-color: #ef4444; }
