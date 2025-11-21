@@ -69,17 +69,27 @@ function initializeTree(data) {
 
     if (!data) return;
 
-    // Use radial tree layout for better space utilization
-    const radius = Math.min(width, height) / 2 - 100;
+    rootNode = d3.hierarchy(data);
+
+    // Dynamic radius: ensure enough space between levels
+    // This allows the tree to grow larger than the screen if needed (zoom handles it)
+    const levelSpacing = 100; 
+    const maxDepth = rootNode.height || 1;
+    const radius = Math.max(Math.min(width, height) / 2 - 50, maxDepth * levelSpacing);
+
     treeLayout = d3.tree()
         .size([2 * Math.PI, radius])
         .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
     
-    rootNode = d3.hierarchy(data);
     treeLayout(rootNode);
 
     // Center the tree
-    const initialTransform = d3.zoomIdentity.translate(centerX, centerY);
+    // Adjust initial zoom to fit the tree nicely or start centered
+    const initialScale = Math.min(width, height) / (radius * 2.5); // Zoom out to fit initially
+    const initialTransform = d3.zoomIdentity
+        .translate(centerX, centerY)
+        .scale(Math.max(initialScale, 0.2)); // Don't zoom out too much
+        
     svg.call(zoom.transform, initialTransform);
 
     // Render links with radial projection
@@ -92,6 +102,12 @@ function initializeTree(data) {
             .angle(d => d.x)
             .radius(d => d.y))
         .style('opacity', 0);
+
+    // Color scale for depth (Blue -> Purple -> Pink)
+    const maxDepthVal = rootNode.height || 10;
+    const colorScale = d3.scaleSequential()
+        .domain([0, maxDepthVal])
+        .interpolator(d3.interpolateCool);
 
     // Render nodes with radial projection
     const nodes = g.selectAll('.node')
@@ -106,19 +122,21 @@ function initializeTree(data) {
         .style('opacity', 0); 
 
     nodes.append('circle')
-        .attr('r', 5);
+        .attr('r', 10)
+        .style('fill', d => colorScale(d.depth));
         
-    // Text labels adjusted for radial layout
+    // Text labels centered and upright
     nodes.append('text')
-        .attr('dy', '.31em')
-        .attr('x', d => d.x < Math.PI === !d.children ? 6 : -6)
-        .style('text-anchor', d => d.x < Math.PI === !d.children ? 'start' : 'end')
-        .attr('transform', d => d.x >= Math.PI ? 'rotate(180)' : null)
+        .attr('dy', '.35em')
+        .attr('x', 0)
+        .style('text-anchor', 'middle')
+        // Counter-rotate text to keep it horizontal/upright
+        .attr('transform', d => `rotate(${- (d.x * 180 / Math.PI - 90)})`)
         .text(d => d.data.level !== undefined ? d.data.level : '')
         .style('opacity', 0)
-        .style('font-size', '9px')
+        .style('font-size', '10px')
         .style('font-weight', 'bold')
-        .style('fill', '#cbd5e1');
+        .style('fill', '#ffffff');
     
     nodes.on('click', function(event, d) {
         showNodeState(d.data);

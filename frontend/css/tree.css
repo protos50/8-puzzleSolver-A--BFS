@@ -75,8 +75,8 @@
 }
 
 .node circle {
-    fill: #94a3b8;
-    stroke: #475569;
+    fill: #cbd5e1;
+    stroke: #64748b;
     stroke-width: 2px;
     transition: fill 0.3s, r 0.3s;
     cursor: pointer;
@@ -84,38 +84,41 @@
 
 .node text {
     font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    fill: #cbd5e1;
+    font-size: 12px;
+    fill: #ffffff;
     pointer-events: none;
+    text-shadow: 0 2px 4px rgba(0,0,0,1);
+    font-weight: 700;
 }
 
 .node.visited circle {
-    fill: #60a5fa;
-    stroke: #2563eb;
+    /* Fill handled by JS for level gradient */
+    stroke: #ffffff;
+    stroke-width: 1px;
 }
 
 .node.active circle {
-    fill: #facc15;
-    stroke: #ca8a04;
-    r: 10;
+    fill: #fbbf24 !important; /* Amber - Bright */
+    stroke: #d97706 !important;
+    r: 14;
 }
 
 .node.solution circle {
-    fill: #10b981;
-    stroke: #059669;
-    r: 7;
+    fill: #4ade80 !important; /* Green - Bright */
+    stroke: #16a34a !important;
+    r: 12;
 }
 
 .link {
     fill: none;
-    stroke: #475569;
-    stroke-width: 1.5px;
-    opacity: 0.5;
+    stroke: #94a3b8; /* Lighter slate for better visibility */
+    stroke-width: 2px;
+    opacity: 0.4;
     transition: stroke-width 0.3s, stroke 0.3s, opacity 0.3s;
 }
 
 .link.solution {
-    stroke: #10b981;
-    stroke-width: 2.5px;
+    stroke: #34d399; /* Bright Emerald */
+    stroke-width: 4px;
     opacity: 1;
 }
