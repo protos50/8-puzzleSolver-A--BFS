@@ -130,9 +130,9 @@
 
 .level-grid {
     fill: none;
-    stroke: #94a3b8;
-    stroke-width: 1px;
-    stroke-dasharray: 4 4;
-    opacity: 0.3;
+    stroke: #cbd5e1;
+    stroke-width: 1.5px;
+    stroke-dasharray: 6 4;
+    opacity: 0.6;
     pointer-events: none;
 }

@@ -30,8 +30,9 @@ async function solvePuzzle() {
         levelStats = calculateLevelStats(lastExplorationHistory);
         renderHistogram(levelStats);
 
-        treeData = buildTreeData(lastExplorationHistory);
-        initializeTree(treeData);
+        // Use buildTreeData which now handles worker logic internally
+        // Note: initializeTree will be called by the worker callback in tree.js
+        buildTreeData(lastExplorationHistory);
         
         statsContainer.classList.remove('hidden');
         statNodes.textContent = result.nodes_explored;

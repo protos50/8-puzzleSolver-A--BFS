@@ -170,8 +170,9 @@ def get_queue_snapshot(queue, is_priority=False):
         'rest': []
     }
     
-    # Limit for 'rest' to avoid huge payloads, but enough for "Defragmenter" view
-    rest_limit = 500 
+    # Limit for 'rest' to avoid huge payloads
+    # If we have many frames, we must be very conservative to avoid 500MB+ payloads
+    rest_limit = 20 
     next_up_limit = 5
     
     if is_priority:
@@ -243,7 +244,7 @@ def solve_astar(start_state):
         step_counter += 1
         
         # Record Frame
-        if len(execution_frames) < 2000:
+        if len(execution_frames) < 20000:
             frame = {
                 'step': step_counter,
                 'node': list(current_node.state),
@@ -317,7 +318,7 @@ def solve_bfs(start_state):
         step_counter += 1
         
         # Record Frame
-        if len(execution_frames) < 2000:
+        if len(execution_frames) < 20000:
             frame = {
                 'step': step_counter,
                 'node': list(current_node.state),
