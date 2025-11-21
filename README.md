@@ -2,7 +2,7 @@
 
 This project is an educational prototype designed to visualize and understand how search algorithms work in the context of Artificial Intelligence. It demonstrates how fundamental algorithms can automatically solve complex combinatorial problems.
 
-> **🤖 Note on Development:** This project was designed and programmed with the assistance of Artificial Intelligence (GitHub Copilot). It serves as a dual example: on one hand, it teaches the fundamentals of classical AI (search), and on the other, it demonstrates how modern generative AI can accelerate and enhance software development.
+> **🤖 Note on Development:** This project was designed and programmed with the assistance of Artificial Intelligence. It serves as a dual example: on one hand, it teaches the fundamentals of classical AI (search), and on the other, it demonstrates how modern generative AI can accelerate and enhance software development.
 
 ## 🎯 The Idea: From Simple to Complex
 
