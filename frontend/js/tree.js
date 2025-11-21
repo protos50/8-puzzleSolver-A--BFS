@@ -51,6 +51,8 @@ function initializeTree(data) {
 
     const width = container.clientWidth;
     const height = container.clientHeight;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
     zoom = d3.zoom()
         .scaleExtent([0.1, 3])
@@ -67,70 +69,56 @@ function initializeTree(data) {
 
     if (!data) return;
 
-    treeLayout = d3.tree().nodeSize([25, 50]); 
+    // Use radial tree layout for better space utilization
+    const radius = Math.min(width, height) / 2 - 100;
+    treeLayout = d3.tree()
+        .size([2 * Math.PI, radius])
+        .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+    
     rootNode = d3.hierarchy(data);
     treeLayout(rootNode);
 
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    rootNode.each(d => {
-        if (d.x < minX) minX = d.x;
-        if (d.x > maxX) maxX = d.x;
-        if (d.y < minY) minY = d.y;
-        if (d.y > maxY) maxY = d.y;
-    });
+    // Center the tree
+    const initialTransform = d3.zoomIdentity.translate(centerX, centerY);
+    svg.call(zoom.transform, initialTransform);
 
-    const treeWidth = maxX - minX;
-    const treeHeight = maxY - minY;
-    
-    const padding = 40;
-    const scaleX = (width - padding * 2) / treeWidth;
-    const scaleY = (height - padding * 2) / treeHeight;
-    
-    let initialScale = Math.min(scaleX, scaleY, 1);
-    const MIN_READABLE_SCALE = 0.6;
-    
-    if (initialScale < MIN_READABLE_SCALE) {
-        initialScale = MIN_READABLE_SCALE;
-        const initialX = width / 2;
-        const initialY = padding;
-        const initialTransform = d3.zoomIdentity.translate(initialX, initialY).scale(initialScale);
-        svg.call(zoom.transform, initialTransform);
-    } else {
-        const initialX = (width - treeWidth * initialScale) / 2 - minX * initialScale;
-        const initialY = padding;
-        const initialTransform = d3.zoomIdentity.translate(initialX, initialY).scale(initialScale);
-        svg.call(zoom.transform, initialTransform);
-    }
-
+    // Render links with radial projection
     g.selectAll('.link')
         .data(rootNode.links())
         .enter().append('path')
         .attr('class', 'link')
         .attr('id', d => `link-${d.target.data.id}`)
-        .attr('d', d3.linkVertical()
-            .x(d => d.x)
-            .y(d => d.y))
+        .attr('d', d3.linkRadial()
+            .angle(d => d.x)
+            .radius(d => d.y))
         .style('opacity', 0);
 
+    // Render nodes with radial projection
     const nodes = g.selectAll('.node')
         .data(rootNode.descendants())
         .enter().append('g')
         .attr('class', 'node')
         .attr('id', d => `node-${d.data.id}`)
-        .attr('transform', d => `translate(${d.x},${d.y})`)
+        .attr('transform', d => `
+            rotate(${d.x * 180 / Math.PI - 90})
+            translate(${d.y},0)
+        `)
         .style('opacity', 0); 
 
     nodes.append('circle')
-        .attr('r', 4);
+        .attr('r', 5);
         
+    // Text labels adjusted for radial layout
     nodes.append('text')
         .attr('dy', '.31em')
-        .style('text-anchor', 'middle')
+        .attr('x', d => d.x < Math.PI === !d.children ? 6 : -6)
+        .style('text-anchor', d => d.x < Math.PI === !d.children ? 'start' : 'end')
+        .attr('transform', d => d.x >= Math.PI ? 'rotate(180)' : null)
         .text(d => d.data.level !== undefined ? d.data.level : '')
         .style('opacity', 0)
-        .style('font-size', '8px')
+        .style('font-size', '9px')
         .style('font-weight', 'bold')
-        .style('fill', '#1e293b');
+        .style('fill', '#cbd5e1');
     
     nodes.on('click', function(event, d) {
         showNodeState(d.data);
