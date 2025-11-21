@@ -83,6 +83,65 @@ function initializeEventListeners() {
             }, 100);
         });
     }
+
+    // Solution Controls
+    if (solPrevBtn) {
+        solPrevBtn.addEventListener('click', () => {
+            // Stop auto-play immediately
+            solutionPaused = true;
+            if (solutionInterval) {
+                clearInterval(solutionInterval);
+                solutionInterval = null;
+            }
+            
+            // Move to previous step with fast animation
+            if (solutionCurrentStep > 0) {
+                renderSolutionStep(solutionCurrentStep - 1, 'fast');
+            }
+        });
+    }
+
+    if (solNextBtn) {
+        solNextBtn.addEventListener('click', () => {
+            // Stop auto-play immediately
+            solutionPaused = true;
+            if (solutionInterval) {
+                clearInterval(solutionInterval);
+                solutionInterval = null;
+            }
+            
+            // Move to next step with fast animation
+            if (lastSolutionPath && solutionCurrentStep < lastSolutionPath.length - 1) {
+                renderSolutionStep(solutionCurrentStep + 1, 'fast');
+            }
+        });
+    }
+
+    if (solPlayBtn) {
+        solPlayBtn.addEventListener('click', () => {
+            if (!lastSolutionPath) return;
+            
+            // Toggle play/pause
+            solutionPaused = !solutionPaused;
+            updateSolutionControls();
+            
+            if (!solutionPaused) {
+                // If at end, restart from beginning
+                if (solutionCurrentStep >= lastSolutionPath.length - 1) {
+                    renderSolutionStep(0);
+                }
+                
+                // Start auto-play using the shared function
+                startSolutionAutoPlay();
+            } else {
+                // Paused, clear interval
+                if (solutionInterval) {
+                    clearInterval(solutionInterval);
+                    solutionInterval = null;
+                }
+            }
+        });
+    }
 }
 
 // Initialize on DOM ready

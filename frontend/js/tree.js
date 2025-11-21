@@ -57,7 +57,6 @@ function initializeTree(data) {
     rootNode = d3.hierarchy(data);
 
     // Dynamic radius: ensure enough space between levels
-    // This allows the tree to grow larger than the screen if needed (zoom handles it)
     const levelSpacing = 100; 
     const maxDepth = rootNode.height || 1;
     const radius = Math.max(Math.min(width, height) / 2 - 50, maxDepth * levelSpacing);
@@ -79,82 +78,57 @@ function initializeTree(data) {
     treeLayout(rootNode);
 
     // Center the tree
-    // Adjust initial zoom to fit the tree nicely or start centered
-    const initialScale = Math.min(width, height) / (radius * 2.5); // Zoom out to fit initially
+    const initialScale = Math.min(width, height) / (radius * 2.5);
     const initialTransform = d3.zoomIdentity
         .translate(centerX, centerY)
-        .scale(Math.max(initialScale, 0.2)); // Don't zoom out too much
+        .scale(Math.max(initialScale, 0.2));
         
     svg.call(zoom.transform, initialTransform);
 
-    // Color scale for depth (Blue -> Purple -> Pink)
+    // Color scale for depth
     const maxDepthVal = rootNode.height || 10;
     const colorScale = d3.scaleSequential()
         .domain([0, maxDepthVal])
         .interpolator(d3.interpolateCool);
 
-    // Batch rendering to prevent UI freeze
-    const allLinks = rootNode.links();
-    const allNodes = rootNode.descendants();
-    const batchSize = 500; 
-    let currentIndex = 0;
+    // Render all links at once (hidden initially)
+    g.selectAll('.link')
+        .data(rootNode.links())
+        .enter().append('path')
+        .attr('class', 'link')
+        .attr('id', d => `link-${d.target.data.id}`)
+        .attr('d', d3.linkRadial()
+            .angle(d => d.x)
+            .radius(d => d.y))
+        .style('opacity', 0);
 
-    function renderBatch() {
-        // Render Links Batch
-        if (currentIndex < allLinks.length) {
-            const linksBatch = allLinks.slice(currentIndex, Math.min(currentIndex + batchSize, allLinks.length));
-            g.selectAll('.link-batch-' + currentIndex) 
-                .data(linksBatch)
-                .enter().append('path')
-                .attr('class', 'link')
-                .attr('id', d => `link-${d.target.data.id}`)
-                .attr('d', d3.linkRadial()
-                    .angle(d => d.x)
-                    .radius(d => d.y))
-                .style('opacity', 0);
-        }
+    // Render all nodes at once (hidden initially)
+    const nodes = g.selectAll('.node')
+        .data(rootNode.descendants())
+        .enter().append('g')
+        .attr('class', 'node')
+        .attr('id', d => `node-${d.data.id}`)
+        .attr('transform', d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+        .style('opacity', 0);
 
-        // Render Nodes Batch
-        if (currentIndex < allNodes.length) {
-            const nodesBatch = allNodes.slice(currentIndex, Math.min(currentIndex + batchSize, allNodes.length));
-            const nodes = g.selectAll('.node-batch-' + currentIndex)
-                .data(nodesBatch)
-                .enter().append('g')
-                .attr('class', 'node')
-                .attr('id', d => `node-${d.data.id}`)
-                .attr('transform', d => `
-                    rotate(${d.x * 180 / Math.PI - 90})
-                    translate(${d.y},0)
-                `)
-                .style('opacity', 0); 
-
-            nodes.append('circle')
-                .attr('r', 10)
-                .style('fill', d => colorScale(d.depth));
-                
-            nodes.append('text')
-                .attr('dy', '.35em')
-                .attr('x', 0)
-                .style('text-anchor', 'middle')
-                .attr('transform', d => `rotate(${- (d.x * 180 / Math.PI - 90)})`)
-                .text(d => d.data.level !== undefined ? d.data.level : '')
-                .style('opacity', 0)
-                .style('font-size', '10px')
-                .style('font-weight', 'bold')
-                .style('fill', '#ffffff');
-            
-            nodes.on('click', function(event, d) {
-                showNodeState(d.data);
-            });
-        }
-
-        currentIndex += batchSize;
-        if (currentIndex < Math.max(allLinks.length, allNodes.length)) {
-            requestAnimationFrame(renderBatch);
-        }
-    }
-
-    renderBatch();
+    nodes.append('circle')
+        .attr('r', 10)
+        .style('fill', d => colorScale(d.depth));
+        
+    nodes.append('text')
+        .attr('dy', '.35em')
+        .attr('x', 0)
+        .style('text-anchor', 'middle')
+        .attr('transform', d => `rotate(${- (d.x * 180 / Math.PI - 90)})`)
+        .text(d => d.data.level !== undefined ? d.data.level : '')
+        .style('opacity', 0)
+        .style('font-size', '10px')
+        .style('font-weight', 'bold')
+        .style('fill', '#ffffff');
+    
+    nodes.on('click', function(event, d) {
+        showNodeState(d.data);
+    });
 }
 
 function updateTree(currentFrame) {
@@ -163,18 +137,22 @@ function updateTree(currentFrame) {
     const stateStr = currentFrame.node.toString();
     const safeId = stateStr.replace(/,/g, '_');
     
+    // Reveal current node
     const node = g.select(`#node-${safeId}`);
     node.style('opacity', 1)
         .classed('visited', true);
     
+    // Reveal text
     node.select('text')
         .style('opacity', 1);
         
+    // Reveal link to parent
     if (currentFrame.parent) {
         g.select(`#link-${safeId}`)
             .style('opacity', 0.6);
     }
     
+    // Highlight Active
     g.selectAll('.node.active').classed('active', false);
     node.classed('active', true);
 }
@@ -186,11 +164,13 @@ function highlightSolutionPath(path) {
         const stateStr = step.state.toString();
         const safeId = stateStr.replace(/,/g, '_');
         
+        // Highlight Node
         g.select(`#node-${safeId}`)
             .classed('solution', true)
             .style('opacity', 1)
             .raise();
             
+        // Highlight Link (except for root)
         if (index > 0) {
             g.select(`#link-${safeId}`)
                 .classed('solution', true)

@@ -9,6 +9,7 @@
     width: 300px;
     height: 300px;
     margin: 0 auto;
+    position: relative;
 }
 
 .tile {
@@ -20,7 +21,7 @@
     font-size: 2rem;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s, background-color 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
 }
 
@@ -31,6 +32,55 @@
 .tile.empty {
     background-color: transparent;
     cursor: default;
+}
+
+.tile.moving {
+    background: linear-gradient(145deg, #fbbf24, #f59e0b);
+    transform: scale(1.15);
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.8);
+    z-index: 10;
+    animation: pulse 0.4s ease-in-out;
+}
+
+.tile.will-move {
+    background: linear-gradient(145deg, #fbbf24, #f59e0b);
+    animation: pulse-highlight 0.6s ease-in-out infinite;
+    z-index: 5;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1.15); }
+    50% { transform: scale(1.25); }
+}
+
+@keyframes pulse-highlight {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+    }
+    50% { 
+        transform: scale(1.1); 
+        box-shadow: 0 8px 24px rgba(251, 191, 36, 0.8);
+    }
+}
+
+.movement-arrow {
+    position: absolute;
+    font-size: 3rem;
+    color: #ffffff;
+    text-shadow: 
+        0 0 10px rgba(59, 130, 246, 0.8), 
+        0 0 20px rgba(59, 130, 246, 0.6),
+        0 0 30px rgba(59, 130, 246, 0.4),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    z-index: 100;
+    animation: arrow-pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes arrow-pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
 }
 
 .tile.highlight {

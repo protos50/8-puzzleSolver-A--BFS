@@ -1,7 +1,12 @@
 // Rendering functions for grids and UI elements
 
-function renderGrid(state, elementId, highlightTile = null) {
+function renderGrid(state, elementId, highlightTile = null, highlightClass = 'moving') {
     const grid = document.getElementById(elementId);
+    
+    // Remove any existing arrows
+    const existingArrow = grid.querySelector('.movement-arrow');
+    if (existingArrow) existingArrow.remove();
+    
     grid.innerHTML = '';
     state.forEach((tile, index) => {
         const tileDiv = document.createElement('div');
@@ -9,7 +14,7 @@ function renderGrid(state, elementId, highlightTile = null) {
         tileDiv.textContent = tile === 0 ? '' : tile;
         
         if (tile === highlightTile && tile !== 0) {
-            tileDiv.classList.add('highlight');
+            tileDiv.classList.add(highlightClass);
         }
         
         grid.appendChild(tileDiv);

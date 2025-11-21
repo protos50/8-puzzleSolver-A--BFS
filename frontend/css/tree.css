@@ -69,6 +69,13 @@
     border-radius: 8px;
     overflow: hidden;
     cursor: grab;
+    /* Performance optimization */
+    contain: strict;
+    content-visibility: auto;
+}
+
+.tree-container svg {
+    will-change: transform;
 }
 
 .tree-section.fullscreen .tree-container {

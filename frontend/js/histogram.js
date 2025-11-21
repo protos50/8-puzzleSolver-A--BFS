@@ -23,9 +23,21 @@ function renderHistogram(stats) {
     
     if (!stats) return;
 
+    // Use logarithmic scale for better visual distribution
+    const logMax = Math.log10(stats.maxCount + 1);
+
     for (let i = 0; i <= stats.maxLevel; i++) {
         const count = stats.counts[i] || 0;
-        const heightPercentage = (count / stats.maxCount) * 100;
+        
+        let heightPercentage = 0;
+        if (count > 0) {
+            // Logarithmic scaling for better visual proportion
+            const logValue = Math.log10(count + 1);
+            // Scale to 85% max to leave room for labels
+            heightPercentage = (logMax > 0) ? (logValue / logMax) * 85 : 85;
+            // Ensure minimum visibility for non-zero counts
+            heightPercentage = Math.max(heightPercentage, 5);
+        }
         
         const barContainer = document.createElement('div');
         barContainer.className = 'bar-container';
@@ -33,8 +45,14 @@ function renderHistogram(stats) {
         const bar = document.createElement('div');
         bar.className = 'bar';
         bar.id = `bar-level-${i}`;
-        bar.style.height = `${Math.max(heightPercentage, 5)}%`;
+        bar.style.height = `${heightPercentage}%`;
         bar.title = `Level ${i}: ${count} nodes`;
+        
+        // Add count label
+        const countLabel = document.createElement('div');
+        countLabel.className = 'bar-count';
+        countLabel.textContent = count;
+        bar.appendChild(countLabel);
         
         const label = document.createElement('div');
         label.className = 'bar-label';

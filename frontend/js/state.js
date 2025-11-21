@@ -14,3 +14,9 @@ let rootNode = null;
 let svg = null;
 let g = null;
 let zoom = null;
+
+// New state variables
+let isSolving = false;
+let isAnimating = false;
+let solutionCurrentStep = 0;
+let solutionPaused = false;

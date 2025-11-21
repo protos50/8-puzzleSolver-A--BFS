@@ -21,3 +21,9 @@ const resetZoomBtn = document.getElementById('reset-zoom-btn');
 const toggleGridBtn = document.getElementById('toggle-grid-btn');
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 const treeSection = document.querySelector('.tree-section');
+
+// Solution Controls
+const solPrevBtn = document.getElementById('sol-prev-btn');
+const solPlayBtn = document.getElementById('sol-play-btn');
+const solNextBtn = document.getElementById('sol-next-btn');
+const solStepDisplay = document.getElementById('sol-step-display');

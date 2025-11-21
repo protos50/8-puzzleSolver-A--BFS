@@ -26,25 +26,49 @@
     display: flex;
     align-items: flex-end;
     gap: 4px;
-    height: 150px;
+    height: 250px;
     padding: 0 1rem;
     overflow-x: auto;
+    border-bottom: 2px solid var(--secondary);
+    position: relative;
 }
 
 .bar-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
     flex: 0 0 auto;
+    position: relative;
+    height: 100%;
 }
 
 .bar {
-    width: 20px;
-    background: linear-gradient(to top, #3b82f6, #60a5fa);
+    width: 24px;
+    background: linear-gradient(to top, #2563eb, #60a5fa, #93c5fd);
     border-radius: 4px 4px 0 0;
     transition: all 0.3s;
     cursor: pointer;
-    min-height: 10px;
+    min-height: 8px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bar-count {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.bar:hover .bar-count {
+    opacity: 1;
 }
 
 .bar:hover {
@@ -53,9 +77,16 @@
 }
 
 .bar.active {
-    background: linear-gradient(to top, #f59e0b, #fbbf24);
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.8);
-    transform: scaleY(1.1);
+    background: linear-gradient(to top, #f59e0b, #fbbf24, #fcd34d);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 1), 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: scaleY(1.05) scaleX(1.2);
+    z-index: 10;
+}
+
+.bar.active .bar-count {
+    opacity: 1;
+    color: #fbbf24;
+    font-weight: 800;
 }
 
 .bar-label {
