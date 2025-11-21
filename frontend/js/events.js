@@ -60,6 +60,13 @@ function initializeEventListeners() {
         });
     }
 
+    if (toggleGridBtn) {
+        toggleGridBtn.addEventListener('click', () => {
+            toggleTreeGrid();
+            toggleGridBtn.classList.toggle('active');
+        });
+    }
+
     if (fullscreenBtn && treeSection) {
         fullscreenBtn.addEventListener('click', () => {
             treeSection.classList.toggle('fullscreen');

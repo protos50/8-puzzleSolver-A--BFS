@@ -18,5 +18,6 @@ const modalClose = document.querySelector('.modal-close');
 const zoomInBtn = document.getElementById('zoom-in-btn');
 const zoomOutBtn = document.getElementById('zoom-out-btn');
 const resetZoomBtn = document.getElementById('reset-zoom-btn');
+const toggleGridBtn = document.getElementById('toggle-grid-btn');
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 const treeSection = document.querySelector('.tree-section');

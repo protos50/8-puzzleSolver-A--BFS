@@ -1,4 +1,5 @@
 // Dynamic Search Tree Visualization
+let isGridVisible = false;
 
 function buildTreeData(frames) {
     if (!frames || frames.length === 0) return null;
@@ -76,6 +77,16 @@ function initializeTree(data) {
     const levelSpacing = 100; 
     const maxDepth = rootNode.height || 1;
     const radius = Math.max(Math.min(width, height) / 2 - 50, maxDepth * levelSpacing);
+
+    // Draw concentric circles for levels
+    const gridGroup = g.append('g').attr('class', 'grid-layer').style('opacity', isGridVisible ? 1 : 0);
+    for (let i = 1; i <= maxDepth; i++) {
+        gridGroup.append('circle')
+            .attr('cx', 0)
+            .attr('cy', 0)
+            .attr('r', i * levelSpacing)
+            .attr('class', 'level-grid');
+    }
 
     treeLayout = d3.tree()
         .size([2 * Math.PI, radius])
@@ -183,4 +194,14 @@ function highlightSolutionPath(path) {
                 .style('opacity', 1);
         }
     });
+}
+
+function toggleTreeGrid() {
+    isGridVisible = !isGridVisible;
+    if (g) {
+        g.select('.grid-layer')
+            .transition()
+            .duration(300)
+            .style('opacity', isGridVisible ? 1 : 0);
+    }
 }

@@ -56,6 +56,11 @@
     transform: translateY(-1px);
 }
 
+.tree-controls button.active {
+    background-color: var(--primary);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
 .tree-container {
     width: 100%;
     height: 700px;
@@ -104,9 +109,9 @@
 }
 
 .node.solution circle {
-    fill: #4ade80 !important; /* Green - Bright */
-    stroke: #16a34a !important;
-    r: 12;
+    stroke: #22c55e;
+    stroke-width: 3px;
+    fill: #22c55e !important;
 }
 
 .link {
@@ -121,4 +126,13 @@
     stroke: #34d399; /* Bright Emerald */
     stroke-width: 4px;
     opacity: 1;
+}
+
+.level-grid {
+    fill: none;
+    stroke: #94a3b8;
+    stroke-width: 1px;
+    stroke-dasharray: 4 4;
+    opacity: 0.3;
+    pointer-events: none;
 }
