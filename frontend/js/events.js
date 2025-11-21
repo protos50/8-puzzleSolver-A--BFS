@@ -4,6 +4,15 @@ function initializeEventListeners() {
     // Main controls
     shuffleBtn.addEventListener('click', shuffle);
     solveBtn.addEventListener('click', solvePuzzle);
+    
+    // Difficulty change - update mode indicator
+    difficultySelect.addEventListener('change', () => {
+        const mode = difficultySelect.value;
+        if (shuffleModeIndicator) {
+            shuffleModeIndicator.textContent = mode === 'easy' ? 'Mode: Easy' : 'Mode: Hard';
+            shuffleModeIndicator.style.color = mode === 'easy' ? '#4caf50' : '#94a3b8';
+        }
+    });
     replayBtn.addEventListener('click', startAnimations);
 
     // Animation controls
@@ -18,6 +27,14 @@ function initializeEventListeners() {
 
     speedSelect.addEventListener('change', (e) => {
         explorationSpeed = parseInt(e.target.value);
+    });
+
+    // Algorithm change - show/hide BFS controls
+    algorithmSelect.addEventListener('change', () => {
+        const isBFS = algorithmSelect.value === 'bfs';
+        if (bfsControlsDiv) {
+            bfsControlsDiv.style.display = isBFS ? 'flex' : 'none';
+        }
     });
 
     // Modal controls
@@ -54,9 +71,14 @@ function initializeEventListeners() {
 
     if (resetZoomBtn) {
         resetZoomBtn.addEventListener('click', () => {
-            const container = document.getElementById('tree-container');
-            const svgElement = d3.select(container).select('svg');
-            svgElement.transition().call(zoom.transform, d3.zoomIdentity);
+            if (typeof resetTreeZoom === 'function') {
+                resetTreeZoom();
+            } else {
+                // Fallback
+                const container = document.getElementById('tree-container');
+                const svgElement = d3.select(container).select('svg');
+                svgElement.transition().call(zoom.transform, d3.zoomIdentity);
+            }
         });
     }
 
@@ -70,15 +92,20 @@ function initializeEventListeners() {
     if (fullscreenBtn && treeSection) {
         fullscreenBtn.addEventListener('click', () => {
             treeSection.classList.toggle('fullscreen');
-            fullscreenBtn.textContent = treeSection.classList.contains('fullscreen') ? '⛶ Salir' : '⛶';
+            fullscreenBtn.textContent = treeSection.classList.contains('fullscreen') ? '⛶ Exit' : '⛶';
             
             setTimeout(() => {
-                const container = document.getElementById('tree-container');
-                const width = container.clientWidth;
-                const height = container.clientHeight;
-                
-                if (svg) {
-                    svg.attr('width', width).attr('height', height);
+                if (typeof resizeTree === 'function') {
+                    resizeTree();
+                } else {
+                    // Fallback
+                    const container = document.getElementById('tree-container');
+                    const width = container.clientWidth;
+                    const height = container.clientHeight;
+                    
+                    if (svg) {
+                        svg.attr('width', width).attr('height', height);
+                    }
                 }
             }, 100);
         });
@@ -148,5 +175,19 @@ function initializeEventListeners() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Initializing...");
     initializeEventListeners();
+    
+    // Initialize BFS controls visibility based on current selection
+    if (bfsControlsDiv && algorithmSelect) {
+        const isBFS = algorithmSelect.value === 'bfs';
+        bfsControlsDiv.style.display = isBFS ? 'flex' : 'none';
+    }
+    
+    // Initialize mode indicator based on difficulty selector
+    if (shuffleModeIndicator && difficultySelect) {
+        const mode = difficultySelect.value;
+        shuffleModeIndicator.textContent = mode === 'easy' ? 'Mode: Easy' : 'Mode: Hard';
+        shuffleModeIndicator.style.color = mode === 'easy' ? '#4caf50' : '#94a3b8';
+    }
+    
     shuffle();
 });

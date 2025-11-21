@@ -24,30 +24,56 @@ This program uses the classic "8-Puzzle" to demonstrate that:
   * **Dual Boards:** Watch the solution executing on the left, while on the right you observe the algorithm "thinking" and testing paths.
   * **Interactive Search Tree:** A dynamic graph that draws the search structure. You can zoom in and see how decisions branch out.
   * **Frontier (Priority Queue):** Visualize which states are waiting to be explored and how the algorithm prioritizes them (color-coded).
+  * **Level Histogram:** Shows node distribution by depth with logarithmic scaling for better visibility.
+
+* **Smart Controls:**
+  * **Easy Shuffle:** Generates simpler puzzles (8-12 moves) ideal for BFS demonstrations.
+  * **Difficulty Estimator:** Real-time hint showing puzzle complexity before solving.
+  * **Adjustable BFS Limit:** Choose between 5K, 10K, 20K, or 50K nodes to balance performance vs. completeness.
+  * **Solution Playback:** Step-by-step navigation with play/pause controls.
 
 ## 🚀 Execution Instructions
 
 ### Prerequisites
 
-* Python 3.x installed.
+* Python 3.12+ installed.
 
 ### Steps
 
-1. **Install dependencies:**
+1. **Clone the repository:**
 
    ```bash
-   pip install flask flask-cors
+   git clone https://github.com/protos50/8-puzzleSolver-A--BFS.git
+   cd tp1_prototipo
    ```
 
-2. **Start the application:**
-   From the project root folder:
+2. **Create and activate virtual environment:**
+
+   ```bash
+   # Create virtual environment
+   python -m venv .venv
+
+   # Activate (Windows)
+   .venv\Scripts\activate
+
+   # Activate (Linux/Mac)
+   source .venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Start the application:**
 
    ```bash
    python backend/app.py
    ```
 
-3. **Use:**
-   Open your web browser and go to: **`http://localhost:5000`**
+5. **Use:**
+   Open your web browser and go to: **`http://127.0.0.1:5000`**
 
 ## 📂 Project Structure
 
@@ -59,6 +85,19 @@ The project follows a simple but effective architecture:
 * **`frontend/` (HTML/CSS/JS):** The "face".
   * Interactive visualization using D3.js for the search tree.
   * Animation logic and state control on the client side.
+  * Modular architecture: separate CSS and JS files for each component.
+* **`requirements.txt`:** Python dependencies (Flask, flask-cors).
+* **`.venv/`:** Virtual environment (not tracked in Git).
+
+## 📦 Dependencies Management
+
+All Python dependencies are listed in `requirements.txt`:
+
+* Flask 3.1.2 (web framework)
+* flask-cors 6.0.1 (CORS support)
+* And their sub-dependencies
+
+The virtual environment (`.venv`) is **not pushed to Git** thanks to `.gitignore`. Each developer creates their own local environment.
 
 ## 🧠 Educational Value
 

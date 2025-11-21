@@ -78,7 +78,7 @@ function updateHistogramHighlight(currentLevel) {
         
         const summary = document.getElementById('level-summary');
         if (levelStats) {
-            summary.textContent = `Nivel actual: ${currentLevel} | Máximo: ${levelStats.maxLevel}`;
+            summary.textContent = `Current level: ${currentLevel} | Max: ${levelStats.maxLevel}`;
         }
     }
 }

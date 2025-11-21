@@ -68,7 +68,7 @@ function showNodeState(nodeData) {
     
     if (!modal || !nodeData.state) return;
     
-    modalTitle.textContent = `Nodo - Nivel ${nodeData.level}`;
+    modalTitle.textContent = `Node - Level ${nodeData.level}`;
     
     modalGrid.innerHTML = '';
     nodeData.state.forEach(tile => {
@@ -80,16 +80,16 @@ function showNodeState(nodeData) {
     
     modalInfo.innerHTML = `
         <div class="info-row">
-            <span>Paso:</span>
+            <span>Step:</span>
             <span>${nodeData.step}</span>
         </div>
         <div class="info-row">
-            <span>Nivel/Profundidad:</span>
+            <span>Level/Depth:</span>
             <span>${nodeData.level}</span>
         </div>
         <div class="info-row">
-            <span>Acción:</span>
-            <span>${nodeData.name || 'Inicio'}</span>
+            <span>Action:</span>
+            <span>${nodeData.name || 'Start'}</span>
         </div>
     `;
     

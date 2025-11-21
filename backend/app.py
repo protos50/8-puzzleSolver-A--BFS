@@ -22,9 +22,12 @@ def solve():
         return jsonify({'error': 'Invalid state'}), 400
     
     algorithm = data.get('algorithm', 'astar')
+    max_nodes = data.get('max_nodes', 10000)  # Get custom limit from frontend
+    
+    print(f"Solving with {algorithm}, max_nodes: {max_nodes}")  # Debug log
     
     try:
-        result = solve_puzzle(start_state, algorithm)
+        result = solve_puzzle(start_state, algorithm, max_nodes)
         if result is None:
              return jsonify({'error': 'No solution found'}), 404
         

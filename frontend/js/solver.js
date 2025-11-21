@@ -1,5 +1,127 @@
 // Solver and animation logic
 
+function shuffle() {
+    // Stop any ongoing animations/solutions
+    stopAllAnimations();
+    
+    // Reset states
+    isSolving = false;
+    isAnimating = false;
+    lastSolutionPath = null;
+    lastExplorationHistory = null;
+    
+    // Reset UI
+    replayBtn.style.display = 'none';
+    solveBtn.disabled = false;
+    statusDiv.textContent = '';
+    statsContainer.classList.add('hidden');
+    
+    // Debug: check if difficultySelect exists
+    if (!difficultySelect) {
+        console.error('difficultySelect is null!');
+        generateRandomPuzzle();
+        return;
+    }
+    
+    const difficulty = difficultySelect.value;
+    console.log('Shuffling with difficulty:', difficulty);
+    
+    if (difficulty === 'easy') {
+        // Easy mode: generate from goal state with limited moves
+        generateEasyPuzzle();
+    } else {
+        // Hard mode: completely random
+        generateRandomPuzzle();
+    }
+}
+
+function generateEasyPuzzle() {
+    const maxMoves = 8; // Easy puzzles: 8-12 moves from solution
+    const goalState = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+    let state = [...goalState];
+    let lastMove = null;
+    
+    // Make random valid moves
+    for (let i = 0; i < maxMoves + Math.floor(Math.random() * 5); i++) {
+        const emptyIndex = state.indexOf(0);
+        const row = Math.floor(emptyIndex / 3);
+        const col = emptyIndex % 3;
+        const moves = [];
+        
+        if (row > 0) moves.push(-3); // Up
+        if (row < 2) moves.push(3);  // Down
+        if (col > 0) moves.push(-1); // Left
+        if (col < 2) moves.push(1);  // Right
+        
+        // Avoid undoing the last move
+        const validMoves = moves.filter(m => m !== -lastMove);
+        const move = validMoves[Math.floor(Math.random() * validMoves.length)];
+        
+        [state[emptyIndex], state[emptyIndex + move]] = [state[emptyIndex + move], state[emptyIndex]];
+        lastMove = move;
+    }
+    
+    // Ensure it's solvable
+    if (!isSolvable(state)) {
+        const nonZero = state.map((v, i) => v !== 0 ? i : -1).filter(i => i !== -1);
+        [state[nonZero[0]], state[nonZero[1]]] = [state[nonZero[1]], state[nonZero[0]]];
+    }
+    
+    currentState = state;
+    renderGrid(currentState, 'grid');
+    renderGrid(currentState, 'grid-exploration');
+    
+    // Update mode indicator
+    if (shuffleModeIndicator) {
+        shuffleModeIndicator.textContent = 'Mode: Easy';
+        shuffleModeIndicator.style.color = '#4caf50';
+    }
+    
+    // Show difficulty estimate
+    const estDifficulty = manhattanDistance(state);
+    if (difficultyHint) {
+        difficultyHint.textContent = `Estimated difficulty: ${estDifficulty} moves (Easy for BFS)`;
+        difficultyHint.style.color = estDifficulty <= 15 ? '#4caf50' : '#ff9800';
+    }
+}
+
+function generateRandomPuzzle() {
+    // Fisher-Yates shuffle for better randomization
+    let attempts = 0;
+    do {
+        currentState = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+        for (let i = currentState.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [currentState[i], currentState[j]] = [currentState[j], currentState[i]];
+        }
+        attempts++;
+    } while (!isSolvable(currentState) && attempts < 100);
+    
+    renderGrid(currentState, 'grid');
+    renderGrid(currentState, 'grid-exploration');
+    
+    // Update mode indicator
+    if (shuffleModeIndicator) {
+        shuffleModeIndicator.textContent = 'Mode: Hard';
+        shuffleModeIndicator.style.color = '#94a3b8';
+    }
+    
+    // Show difficulty estimate
+    const estDifficulty = manhattanDistance(currentState);
+    if (difficultyHint) {
+        const isBFS = algorithmSelect.value === 'bfs';
+        difficultyHint.textContent = `Estimated difficulty: ${estDifficulty} moves`;
+        if (isBFS) {
+            difficultyHint.style.color = estDifficulty <= 15 ? '#4caf50' : estDifficulty <= 25 ? '#ff9800' : '#f44336';
+            if (estDifficulty > 25) {
+                difficultyHint.textContent += ' (May exceed BFS limit!)';
+            }
+        } else {
+            difficultyHint.style.color = '#4caf50';
+        }
+    }
+}
+
 function stopAllAnimations() {
     isAnimating = false;
     if (solutionInterval) clearInterval(solutionInterval);
@@ -33,6 +155,10 @@ async function solvePuzzle() {
     try {
         const algorithm = algorithmSelect.value;
         
+        // Get BFS limit from select if BFS is chosen
+        const bfsLimit = algorithm === 'bfs' && bfsLimitSelect ? parseInt(bfsLimitSelect.value) : 10000;
+        console.log(`Solving with ${algorithm}, BFS limit: ${bfsLimit}`);
+        
         const response = await fetch('/solve', {
             method: 'POST',
             headers: {
@@ -40,7 +166,8 @@ async function solvePuzzle() {
             },
             body: JSON.stringify({ 
                 state: currentState,
-                algorithm: algorithm 
+                algorithm: algorithm,
+                max_nodes: bfsLimit
             })
         });
 
@@ -51,6 +178,8 @@ async function solvePuzzle() {
         const result = await response.json();
         lastSolutionPath = result.path;
         lastExplorationHistory = result.execution_frames;
+        
+        console.log(`Result: ${result.nodes_explored} nodes explored, limit was ${bfsLimit}`);
         
         levelStats = calculateLevelStats(lastExplorationHistory);
         renderHistogram(levelStats);
@@ -66,7 +195,13 @@ async function solvePuzzle() {
         if (lastSolutionPath) {
             statusDiv.textContent = `Solution found in ${lastSolutionPath.length - 1} moves!`;
         } else {
-            statusDiv.textContent = 'No solution found!';
+            // Special case: BFS may be cut off by the safety limit
+            const bfsLimit = algorithm === 'bfs' && bfsLimitSelect ? parseInt(bfsLimitSelect.value) : 10000;
+            if (algorithm === 'bfs' && result.nodes_explored >= bfsLimit) {
+                statusDiv.innerHTML = `<span style="color: #ef4444; font-weight: 800; font-size: 1.1em;">⚠️ BFS STOPPED: Safety limit of ${bfsLimit.toLocaleString()} nodes reached!</span><br><span style="font-size: 0.9em">Solution hidden to prevent browser crash. Try 'Easy Mode' or increase limit.</span>`;
+            } else {
+                statusDiv.textContent = 'No solution found!';
+            }
         }
         
         isSolving = false;
@@ -141,15 +276,18 @@ function renderSolutionStep(index, animationMode = 'normal') {
         
         // Stage 2: Show arrow
         setTimeout(() => {
+            if (!lastSolutionPath) return;
             showMovementArrow(movedTile, direction, lastSolutionPath[index - 1].state);
             
             // Stage 3: Move the tile
             setTimeout(() => {
+                if (!lastSolutionPath) return;
                 removeMovementArrow();
                 renderGrid(lastSolutionPath[index].state, 'grid', movedTile, 'moving');
                 
                 // Stage 4: Remove highlight
                 setTimeout(() => {
+                    if (!lastSolutionPath) return;
                     renderGrid(lastSolutionPath[index].state, 'grid');
                 }, timings.move);
             }, timings.arrow);
@@ -322,27 +460,4 @@ function startSolutionAutoPlay() {
     }, 1800); // 1800ms for full animation cycle (600 + 600 + 400 + 200 buffer)
 }
 
-function shuffle() {
-    stopAllAnimations();
-    isSolving = false; // Force reset solving state
-
-    let newState;
-    do {
-        newState = [...currentState].sort(() => Math.random() - 0.5);
-    } while (!isSolvable(newState));
-    
-    currentState = newState;
-    renderGrid(currentState, 'grid');
-    renderGrid(currentState, 'grid-exploration');
-    statusDiv.textContent = 'Shuffled!';
-    solveBtn.disabled = false;
-    replayBtn.disabled = true;
-    statsContainer.classList.add('hidden');
-    updateNodeDetails(null);
-    
-    // Reset solution controls
-    lastSolutionPath = null;
-    solutionCurrentStep = 0;
-    updateSolutionControls();
-}
 

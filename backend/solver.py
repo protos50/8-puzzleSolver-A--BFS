@@ -287,7 +287,7 @@ def solve_astar(start_state):
         'execution_frames': execution_frames
     }
 
-def solve_bfs(start_state):
+def solve_bfs(start_state, max_nodes=10000):
     start_node = Node(tuple(start_state))
     queue = deque([start_node])
     explored = set()
@@ -297,7 +297,6 @@ def solve_bfs(start_state):
     
     # New: Execution Frames instead of simple history
     execution_frames = []
-    max_nodes = 20000
     
     step_counter = 0
 
@@ -305,7 +304,8 @@ def solve_bfs(start_state):
         # Capture frame BEFORE popping (to see queue state)
         # Or AFTER popping (to see current node). Let's do AFTER popping to have a "current node".
         
-        if nodes_explored > max_nodes:
+        if nodes_explored >= max_nodes:
+            print(f"BFS limit reached: {nodes_explored} nodes explored (limit: {max_nodes})")
             return {
                 'path': None,
                 'nodes_explored': nodes_explored,
@@ -350,8 +350,8 @@ def solve_bfs(start_state):
         'execution_frames': execution_frames
     }
 
-def solve_puzzle(start_state, algorithm='astar'):
+def solve_puzzle(start_state, algorithm='astar', max_nodes=10000):
     if algorithm == 'bfs':
-        return solve_bfs(start_state)
+        return solve_bfs(start_state, max_nodes)
     else:
         return solve_astar(start_state)

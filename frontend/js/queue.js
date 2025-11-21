@@ -11,7 +11,7 @@ function renderQueue(snapshot) {
     
     if (!snapshot) return;
     
-    // Next Up - Vista detallada con mini-grids
+    // Next Up - Detailed view with mini-grids
     if (snapshot.next_up && Array.isArray(snapshot.next_up)) {
         snapshot.next_up.forEach(item => {
             const wrapper = document.createElement('div');
@@ -44,7 +44,7 @@ function renderQueue(snapshot) {
             
             const square = document.createElement('div');
             square.className = `queue-item ${levelClass}`;
-            square.title = `Nivel ${level}`;
+            square.title = `Level ${level}`;
             
             square.addEventListener('click', () => {
                 if (item.state) {

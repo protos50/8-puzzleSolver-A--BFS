@@ -1,6 +1,8 @@
 // Dynamic Search Tree Visualization
 let isGridVisible = false;
 let treeWorker = null;
+let initialTreeTransform = null; // Store initial centered transform
+let treeRadius = 0; // Store radius for resizing
 
 // Initialize worker
 if (window.Worker) {
@@ -32,7 +34,8 @@ function buildTreeData(frames) {
 
 function initializeTree(data) {
     const container = document.getElementById('tree-container');
-    container.innerHTML = '';
+    // Clear only the SVG, preserve controls
+    d3.select(container).select('svg').remove();
 
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -45,7 +48,7 @@ function initializeTree(data) {
             g.attr('transform', event.transform);
         });
 
-    svg = d3.select('#tree-container').append('svg')
+    svg = d3.select('#tree-container').insert('svg', ':first-child')
         .attr('width', width)
         .attr('height', height)
         .call(zoom);
@@ -59,7 +62,7 @@ function initializeTree(data) {
     // Dynamic radius: ensure enough space between levels
     const levelSpacing = 100; 
     const maxDepth = rootNode.height || 1;
-    const radius = Math.max(Math.min(width, height) / 2 - 50, maxDepth * levelSpacing);
+    treeRadius = Math.max(Math.min(width, height) / 2 - 50, maxDepth * levelSpacing);
 
     // Draw concentric circles for levels
     const gridGroup = g.append('g').attr('class', 'grid-layer').style('opacity', isGridVisible ? 1 : 0);
@@ -72,18 +75,18 @@ function initializeTree(data) {
     }
 
     treeLayout = d3.tree()
-        .size([2 * Math.PI, radius])
+        .size([2 * Math.PI, treeRadius])
         .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
     
     treeLayout(rootNode);
 
     // Center the tree
-    const initialScale = Math.min(width, height) / (radius * 2.5);
-    const initialTransform = d3.zoomIdentity
+    const initialScale = Math.min(width, height) / (treeRadius * 2.5);
+    initialTreeTransform = d3.zoomIdentity
         .translate(centerX, centerY)
         .scale(Math.max(initialScale, 0.2));
         
-    svg.call(zoom.transform, initialTransform);
+    svg.call(zoom.transform, initialTreeTransform);
 
     // Color scale for depth
     const maxDepthVal = rootNode.height || 10;
@@ -102,14 +105,14 @@ function initializeTree(data) {
             .radius(d => d.y))
         .style('opacity', 0);
 
-    // Render all nodes at once (hidden initially)
+    // Render all nodes at once (hidden initially, except root)
     const nodes = g.selectAll('.node')
         .data(rootNode.descendants())
         .enter().append('g')
-        .attr('class', 'node')
+        .attr('class', d => `node ${d.depth === 0 ? 'visited' : ''}`)
         .attr('id', d => `node-${d.data.id}`)
         .attr('transform', d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
-        .style('opacity', 0);
+        .style('opacity', d => d.depth === 0 ? 1 : 0);
 
     nodes.append('circle')
         .attr('r', 10)
@@ -121,7 +124,7 @@ function initializeTree(data) {
         .style('text-anchor', 'middle')
         .attr('transform', d => `rotate(${- (d.x * 180 / Math.PI - 90)})`)
         .text(d => d.data.level !== undefined ? d.data.level : '')
-        .style('opacity', 0)
+        .style('opacity', d => d.depth === 0 ? 1 : 0)
         .style('font-size', '10px')
         .style('font-weight', 'bold')
         .style('fill', '#ffffff');
@@ -186,5 +189,34 @@ function toggleTreeGrid() {
             .transition()
             .duration(300)
             .style('opacity', isGridVisible ? 1 : 0);
+    }
+}
+
+function resetTreeZoom() {
+    if (svg && zoom && initialTreeTransform) {
+        svg.transition()
+            .duration(750)
+            .call(zoom.transform, initialTreeTransform);
+    }
+}
+
+function resizeTree() {
+    const container = document.getElementById('tree-container');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    if (svg && zoom) {
+        svg.attr('width', width).attr('height', height);
+        
+        // Recalculate initial transform for the new size
+        const initialScale = Math.min(width, height) / (treeRadius * 2.5);
+        initialTreeTransform = d3.zoomIdentity
+            .translate(centerX, centerY)
+            .scale(Math.max(initialScale, 0.2));
+            
+        // Apply new transform to center
+        svg.transition().duration(500).call(zoom.transform, initialTreeTransform);
     }
 }

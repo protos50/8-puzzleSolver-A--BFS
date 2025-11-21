@@ -72,18 +72,21 @@
     /* Performance optimization */
     contain: strict;
     content-visibility: auto;
+    position: relative; /* For absolute positioning of controls */
 }
 
-.tree-container svg {
-    will-change: transform;
-}
-
-.tree-section.fullscreen .tree-container {
-    height: calc(100vh - 100px);
-}
-
-.tree-container:active {
-    cursor: grabbing;
+.tree-controls {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 0.5rem;
+    background-color: rgba(30, 41, 59, 0.8); /* Semi-transparent background */
+    padding: 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    z-index: 10;
 }
 
 .node circle {

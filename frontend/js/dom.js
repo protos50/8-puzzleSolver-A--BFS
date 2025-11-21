@@ -2,6 +2,7 @@
 const grid = document.getElementById('grid');
 const gridExploration = document.getElementById('grid-exploration');
 const shuffleBtn = document.getElementById('shuffle-btn');
+const difficultySelect = document.getElementById('difficulty-select');
 const solveBtn = document.getElementById('solve-btn');
 const replayBtn = document.getElementById('replay-btn');
 const algorithmSelect = document.getElementById('algorithm-select');
@@ -27,3 +28,9 @@ const solPrevBtn = document.getElementById('sol-prev-btn');
 const solPlayBtn = document.getElementById('sol-play-btn');
 const solNextBtn = document.getElementById('sol-next-btn');
 const solStepDisplay = document.getElementById('sol-step-display');
+
+// BFS Controls
+const bfsControlsDiv = document.getElementById('bfs-controls');
+const bfsLimitSelect = document.getElementById('bfs-limit');
+const difficultyHint = document.getElementById('difficulty-hint');
+const shuffleModeIndicator = document.getElementById('shuffle-mode');

@@ -3,8 +3,18 @@
     display: flex;
     gap: 1rem;
     justify-content: center;
+    align-items: center;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+}
+
+.shuffle-mode-indicator {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background-color: rgba(148, 163, 184, 0.1);
+    border-radius: 0.375rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .animation-controls {
@@ -102,4 +112,44 @@ select:focus, #algorithm-select:focus {
     color: var(--text-secondary);
     min-width: 60px;
     text-align: center;
+}
+
+/* BFS Controls */
+.bfs-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.bfs-controls label {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.bfs-controls select {
+    min-width: 150px;
+}
+
+.bfs-explanation {
+    font-size: 0.85rem;
+    color: #ff9800;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    background-color: rgba(255, 152, 0, 0.1);
+    border-radius: 0.25rem;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.difficulty-hint {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.1);
 }

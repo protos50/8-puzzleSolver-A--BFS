@@ -14,3 +14,19 @@ function isSolvable(state) {
 function updatePlayPauseButton() {
     pauseBtn.textContent = explorationPaused ? '▶' : '⏸';
 }
+
+// Calculate Manhattan distance (heuristic)
+function manhattanDistance(state) {
+    let distance = 0;
+    for (let i = 0; i < state.length; i++) {
+        if (state[i] !== 0) {
+            const goalPos = state[i] - 1;
+            const currentRow = Math.floor(i / 3);
+            const currentCol = i % 3;
+            const goalRow = Math.floor(goalPos / 3);
+            const goalCol = goalPos % 3;
+            distance += Math.abs(currentRow - goalRow) + Math.abs(currentCol - goalCol);
+        }
+    }
+    return distance;
+}
