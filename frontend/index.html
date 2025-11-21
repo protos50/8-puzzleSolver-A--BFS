@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>8-Puzzle Solver (A* vs BFS)</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>8-Puzzle Solver</h1>
+        <p>A* (Informed) vs BFS (Blind)</p>
+      </header>
+
+      <div class="boards-container">
+        <div class="board-section">
+          <h3>Solution View</h3>
+          <div id="grid" class="grid"></div>
+        </div>
+        <div class="board-section">
+          <h3>Exploration View</h3>
+          <div id="grid-exploration" class="grid"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="shuffle-btn">Shuffle</button>
+        <select id="algorithm-select">
+          <option value="astar">A* Search</option>
+          <option value="bfs">BFS</option>
+        </select>
+        <button id="solve-btn">Solve</button>
+        <button id="replay-btn" disabled>Replay Animation</button>
+      </div>
+
+      <div id="stats-container" class="stats-container hidden">
+        <div class="stat-box">
+          <div class="stat-label">Nodes Explored</div>
+          <div class="stat-value" id="stat-nodes">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Time Taken</div>
+          <div class="stat-value" id="stat-time">0s</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Path Length</div>
+          <div class="stat-value" id="stat-path">0</div>
+        </div>
+      </div>
+
+      <div class="status" id="status">Click "Shuffle" to start</div>
+
+      <!-- Sprint 2: Animation Controls -->
+      <div class="animation-controls">
+        <button id="pause-btn" disabled>⏸</button>
+        <button id="skip-btn" disabled>⏩ Skip to End</button>
+        <select id="speed-select" disabled>
+          <option value="500">x0.5 (Slow)</option>
+          <option value="200" selected>x1 (Normal)</option>
+          <option value="100">x2 (Fast)</option>
+          <option value="50">x3 (Very Fast)</option>
+          <option value="20">x5 (Ultra Fast)</option>
+          <option value="5">x20 (Instant)</option>
+        </select>
+      </div>
+
+      <!-- Sprint 3: Node Details Panel -->
+      <div class="node-details">
+        <h3>Current Node Details</h3>
+        <div class="detail-item">
+          <span class="detail-label">Step:</span>
+          <span class="detail-value" id="detail-step">-</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Level/Depth:</span>
+          <span class="detail-value" id="detail-level">-</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Action:</span>
+          <span class="detail-value" id="detail-action">-</span>
+        </div>
+        <!-- Sprint 6: A* Specifics -->
+        <div class="detail-item astar-only hidden">
+          <span class="detail-label">F Score:</span>
+          <span class="detail-value" id="detail-f-score">-</span>
+        </div>
+        <div class="detail-item astar-only hidden">
+          <span class="detail-label">G Score:</span>
+          <span class="detail-value" id="detail-g-score">-</span>
+        </div>
+        <div class="detail-item astar-only hidden">
+          <span class="detail-label">H Score:</span>
+          <span class="detail-value" id="detail-h-score">-</span>
+        </div>
+      </div>
+
+      <!-- Sprint 3: Level/Depth Histogram -->
+      <div class="histogram-section">
+        <h3>Level/Depth Distribution</h3>
+        <div id="level-summary" class="level-summary">-</div>
+        <div id="level-histogram" class="level-histogram"></div>
+      </div>
+
+      <!-- Sprint 4: Queue Visualization -->
+      <div class="queue-section">
+        <h3>Frontier (Cola de Nodos por Explorar)</h3>
+        <p class="queue-explanation">Muestra los nodos en espera de ser explorados. Los colores representan la profundidad.</p>
+        <div class="queue-label">Próximos 5 Nodos (Vista Detallada)</div>
+        <div id="queue-next-up" class="queue-preview"></div>
+        <div class="queue-label">Resto de la Cola (Vista Compacta - Cada cuadrito = 1 nodo)</div>
+        <div id="queue-grid" class="queue-grid"></div>
+      </div>
+
+      <!-- Sprint 5: Dynamic Search Tree -->
+      <div class="tree-section">
+        <div class="tree-header">
+          <h3>Árbol de Búsqueda</h3>
+          <div class="tree-controls">
+            <button id="zoom-in-btn" title="Acercar">🔍+</button>
+            <button id="zoom-out-btn" title="Alejar">🔍-</button>
+            <button id="reset-zoom-btn" title="Restablecer Zoom">⟲</button>
+            <button id="fullscreen-btn" title="Pantalla Completa">⛶</button>
+          </div>
+        </div>
+        <p class="tree-explanation">Usa zoom (scroll o botones) y arrastra para navegar. Click en un nodo para ver su estado.</p>
+        <div id="tree-container" class="tree-container"></div>
+      </div>
+
+      <!-- Modal para mostrar estado de nodo -->
+      <div id="node-modal" class="modal hidden">
+        <div class="modal-content">
+          <span class="modal-close">&times;</span>
+          <h3 id="modal-title">Estado del Nodo</h3>
+          <div id="modal-grid" class="grid"></div>
+          <div id="modal-info"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+
