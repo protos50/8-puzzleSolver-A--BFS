@@ -50,4 +50,6 @@ def solve():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Puerto configurable via variable de entorno (default 5001 para evitar conflictos)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(debug=True, port=port)

@@ -46,3 +46,6 @@ Thumbs.db
 filmina.md
 ALGORITHM_EXPLANATION.md
 plan_desarollo_mejora.md
+
+venv/
+.venv/
